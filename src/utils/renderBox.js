@@ -1,115 +1,31 @@
-import labels from "./labels.json";
+export function drawBoxesOnCanvas(ctxOrCtx, detections, labels, dims){
+  // ctxOrCtx can be CanvasRenderingContext2D or Canvas element
+  let ctx = ctxOrCtx;
+  if (ctxOrCtx.getContext) ctx = ctxOrCtx.getContext('2d');
+  const width = dims.width, height = dims.height;
+  ctx.lineWidth = 3;
+  ctx.font = '14px system-ui';
+  ctx.textBaseline = 'top';
+  detections.forEach(d=>{
+    const [xmin,ymin,xmax,ymax] = d.box;
+    const x = xmin * width;
+    const y = ymin * height;
+    const w = (xmax - xmin) * width;
+    const h = (ymax - ymin) * height;
 
-/**
- * Render prediction boxes
- * @param {HTMLCanvasElement} canvasRef canvas tag reference
- * @param {Array} boxes_data boxes array
- * @param {Array} scores_data scores array
- * @param {Array} classes_data class array
- * @param {Array[Number]} ratios boxes ratio [xRatio, yRatio]
- */
-export const renderBoxes = (
-  canvasRef,
-  boxes_data,
-  scores_data,
-  classes_data,
-  ratios
-) => {
-  const ctx = canvasRef.getContext("2d");
-  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // clean canvas
+    ctx.strokeStyle = '#fff';
+    ctx.beginPath();
+    ctx.moveTo(x, y+20); ctx.lineTo(x, y); ctx.lineTo(x+20, y);
+    ctx.moveTo(x+w-20, y); ctx.lineTo(x+w, y); ctx.lineTo(x+w, y+20);
+    ctx.moveTo(x, y+h-20); ctx.lineTo(x, y+h); ctx.lineTo(x+20, y+h);
+    ctx.moveTo(x+w-20, y+h); ctx.lineTo(x+w, y+h); ctx.lineTo(x+w, y+h-20);
+    ctx.stroke();
 
-  const colors = new Colors();
-
-  // font configs
-  const font = `${Math.max(
-    Math.round(Math.max(ctx.canvas.width, ctx.canvas.height) / 40),
-    14
-  )}px Arial`;
-  ctx.font = font;
-  ctx.textBaseline = "top";
-
-  for (let i = 0; i < scores_data.length; ++i) {
-    // filter based on class threshold
-    const klass = labels[classes_data[i]];
-    const color = colors.get(classes_data[i]);
-    const score = (scores_data[i] * 100).toFixed(1);
-
-    let [y1, x1, y2, x2] = boxes_data.slice(i * 4, (i + 1) * 4);
-    x1 *= ratios[0];
-    x2 *= ratios[0];
-    y1 *= ratios[1];
-    y2 *= ratios[1];
-    const width = x2 - x1;
-    const height = y2 - y1;
-
-    // draw box.
-    ctx.fillStyle = Colors.hexToRgba(color, 0.2);
-    ctx.fillRect(x1, y1, width, height);
-
-    // draw border box.
-    ctx.strokeStyle = color;
-    ctx.lineWidth = Math.max(
-      Math.min(ctx.canvas.width, ctx.canvas.height) / 200,
-      2.5
-    );
-    ctx.strokeRect(x1, y1, width, height);
-
-    // Draw the label background.
-    ctx.fillStyle = color;
-    const textWidth = ctx.measureText(klass + " - " + score + "%").width;
-    const textHeight = parseInt(font, 10); // base 10
-    const yText = y1 - (textHeight + ctx.lineWidth);
-    ctx.fillRect(
-      x1 - 1,
-      yText < 0 ? 0 : yText, // handle overflow label box
-      textWidth + ctx.lineWidth,
-      textHeight + ctx.lineWidth
-    );
-
-    // Draw labels
-    ctx.fillStyle = "#ffffff";
-    ctx.fillText(klass + " - " + score + "%", x1 - 1, yText < 0 ? 0 : yText);
-  }
-};
-
-class Colors {
-  // ultralytics color palette https://ultralytics.com/
-  constructor() {
-    this.palette = [
-      "#FF3838",
-      "#FF9D97",
-      "#FF701F",
-      "#FFB21D",
-      "#CFD231",
-      "#48F90A",
-      "#92CC17",
-      "#3DDB86",
-      "#1A9334",
-      "#00D4BB",
-      "#2C99A8",
-      "#00C2FF",
-      "#344593",
-      "#6473FF",
-      "#0018EC",
-      "#8438FF",
-      "#520085",
-      "#CB38FF",
-      "#FF95C8",
-      "#FF37C7",
-    ];
-    this.n = this.palette.length;
-  }
-
-  get = (i) => this.palette[Math.floor(i) % this.n];
-
-  static hexToRgba = (hex, alpha) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? `rgba(${[
-          parseInt(result[1], 16),
-          parseInt(result[2], 16),
-          parseInt(result[3], 16),
-        ].join(", ")}, ${alpha})`
-      : null;
-  };
+    const label = (labels[d.classId] || 'object') + ' ' + Math.round(d.score*100)+'%';
+    const tw = ctx.measureText(label).width + 8;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(x, Math.max(0,y-24), tw, 22);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(label, x+4, Math.max(0,y-22));
+  });
 }

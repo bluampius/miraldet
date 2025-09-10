@@ -1,0 +1,35 @@
+{
+  "Jaguar": {
+    "title": "Jaguar",
+    "scientific": "Panthera onca",
+    "description": "The jaguar is a large feline native to Central and South America. It has a robust body, a broad head, and powerful jaws.",
+    "audio": "/audio/jaguar.mp3",
+    "glb": "/3d/jaguar.glb",
+    "key": "Jaguar"
+  },
+  "Dog": {
+    "title": "Dog",
+    "description": "A domesticated carnivore of the family Canidae, commonly known as the dog.",
+    "audio": "/audio/dog.mp3",
+    "glb": "/3d/dog.glb",
+    "key": "Dog"
+  },
+  "kb": {
+    "Jaguar": [
+      {
+        "keyword": "habitat",
+        "answer": "Jaguars are typically found in rainforests, swamps, and wooded regions across Central and South America."
+      },
+      {
+        "keyword": "hunt",
+        "answer": "They are ambush predators and have one of the strongest bites relative to body size among big cats."
+      }
+    ],
+    "Dog": [
+      {
+        "keyword": "diet",
+        "answer": "Dogs are omnivores, eating a mix of meat and plant-based food depending on breed and training."
+      }
+    ]
+  }
+}

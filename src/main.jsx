@@ -1,20 +1,6 @@
-/**
- * Entry point of the React application.
- *
- * This file sets up the root of the React application and renders the main App component
- * within a StrictMode wrapper for highlighting potential problems in the application.
- */
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
-import App from "./App.jsx";
-import "./style/index.css";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './components/App';
+import './styles.css';
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <SpeedInsights />
-    <Analytics />
-    <App />
-  </StrictMode>
-);
+createRoot(document.getElementById('root')).render(<App />);
